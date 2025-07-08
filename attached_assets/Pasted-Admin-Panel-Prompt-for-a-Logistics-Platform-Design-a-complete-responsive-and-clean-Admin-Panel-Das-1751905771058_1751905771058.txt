@@ -1,0 +1,97 @@
+Admin Panel Prompt for a Logistics Platform
+Design a complete, responsive, and clean Admin Panel Dashboard (inspired by Trackon.in) for a logistics platform with the following features:
+
+🪙 Currency
+All monetary values should be in Indian Rupees (INR ₹) across the entire system, including invoices and UI components.
+
+🔐 Partner Login System
+Create a Partner Login Page with:
+
+Fields: Email / Partner ID and Password
+
+Validations with loader animation
+
+Error message:
+"❌ Invalid credentials. Please check your partner login details."
+
+Include "Forgot Password" and Resend Login Access functionality
+
+📦 Booking Page
+A booking form with fields for:
+
+Sender & Receiver details
+
+Pickup and Delivery State
+
+Package weight, type, and dimensions
+
+Automatically calculate charges based on admin-configured pricing (see below)
+
+Auto bill generation like eBay checkout:
+
+Show live breakdown: Base fare, extra weight cost, CGST, SGST, IGST, discounts
+
+All in INR ₹
+
+Allow PDF Download / Print of the generated invoice using jspdf or html2pdf.js
+
+⚙️ Admin Customization Panel
+Let the admin configure pricing and availability dynamically:
+
+State/Zone Management
+
+Add/Edit/Delete States or Delivery Zones
+
+Set per-state Pickup Availability and Base Pickup Rates
+
+Weight-Based Pricing Logic
+
+Admin can set:
+
+Minimum Billable Weight (MBW) (e.g., 2 kg)
+
+Base Pickup Charge (e.g., ₹100 for 2kg)
+
+Extra charge per kg beyond MBW (e.g., ₹30/kg after 2 kg)
+
+System should dynamically calculate charges based on these rules
+
+Must allow easy editing from UI
+
+Real-Time Preview
+
+Any change in pricing or state config should show a live preview of billing calculations on a sample booking
+
+🧾 Bill Generation & Invoice Management
+Admin can:
+
+View all bookings
+
+Select booking(s) to generate GST-compliant invoices
+
+Edit: tax fields, discounts, remarks
+
+Export data in CSV / Excel
+
+Generate QR code / tracking link on invoices
+
+💻 Tech Stack Recommendation
+Frontend: React.js + Tailwind CSS
+
+Backend: Node.js (Express) + MongoDB or Firebase
+
+Utilities: jspdf, html2pdf.js, xlsx, optional QR code generator
+
+This panel should be simple, fast, mobile-responsive, and customizable for real logistics business use.
+
+Would you like me to generate the code for any specific module now (e.g., booking form, invoice generator, partner login, admin pricing config)?
+
+
+
+
+
+
+
+
+
+Ask ChatGPT
