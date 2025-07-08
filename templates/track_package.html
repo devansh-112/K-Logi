@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Track Package - GotoFast Logistics{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-5 fw-bold mb-3">
+                    <i class="fas fa-search"></i> Track Your Package
+                </h1>
+                <p class="lead mb-0">
+                    Enter your reference number to get real-time tracking information
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <div class="d-flex gap-3 justify-content-lg-end justify-content-center">
+                    <div class="feature-highlight">
+                        <i class="fas fa-location-arrow text-warning me-2"></i>
+                        <span>Real-time</span>
+                    </div>
+                    <div class="feature-highlight">
+                        <i class="fas fa-bell text-warning me-2"></i>
+                        <span>Live Updates</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <form method="POST" class="mb-4">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label for="reference_number" class="form-label">Reference Number</label>
+                                <input type="text" class="form-control" id="reference_number" name="reference_number" 
+                                       placeholder="Enter your reference number (e.g., LG20241215ABC12345)"
+                                       value="{{ request.form.reference_number if request.form.reference_number else '' }}" required>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-search"></i> Track Package
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    {% if order %}
+                        <!-- Order Information -->
+                        <div class="order-details">
+                            <div class="alert alert-info">
+                                <h5><i class="fas fa-info-circle"></i> Order Details</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Reference:</strong> {{ order.reference_number }}</p>
+                                        <p><strong>Customer:</strong> {{ order.customer_name }}</p>
+                                        <p><strong>Weight:</strong> {{ order.weight }} kg</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Status:</strong> 
+                                            <span class="badge bg-{{ 'success' if order.delivery_status == 'delivered' else 'warning' if order.delivery_status == 'in_transit' else 'danger' if order.delivery_status == 'cancelled' else 'info' }}">
+                                                {{ order.delivery_status.replace('_', ' ').title() }}
+                                            </span>
+                                        </p>
+                                        <p><strong>Zone:</strong> {{ order.zone.name }}</p>
+                                        <p><strong>Size:</strong> {{ order.size.title() }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Dynamic Delivery Timeline -->
+                            <div class="delivery-timeline mt-4">
+                                <h5><i class="fas fa-route"></i> Delivery Timeline</h5>
+                                <div class="timeline-slider">
+                                    <div class="timeline-track">
+                                        <div class="timeline-events" id="timelineEvents">
+                                            <!-- Timeline events will be populated dynamically -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="timeline-controls mt-3">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="refreshTimeline()">
+                                        <i class="fas fa-sync-alt"></i> Refresh Timeline
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Delivery Information -->
+                            <div class="row mt-4">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6><i class="fas fa-map-marker-alt"></i> Pickup Address</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <p>{{ order.pickup_address }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6><i class="fas fa-map-marker-alt"></i> Delivery Address</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <p>{{ order.delivery_address }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Package Progress -->
+                            <div class="progress-section mt-4">
+                                <h6>Delivery Progress</h6>
+                                <div class="progress">
+                                    {% set progress = 25 if order.delivery_status == 'pending' else 50 if order.delivery_status == 'picked_up' else 75 if order.delivery_status == 'in_transit' else 100 if order.delivery_status == 'delivered' else 0 %}
+                                    <div class="progress-bar bg-{{ 'success' if order.delivery_status == 'delivered' else 'warning' if order.delivery_status == 'in_transit' else 'info' }}" 
+                                         role="progressbar" style="width: {{ progress }}%" 
+                                         aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100">
+                                        {{ progress }}%
+                                    </div>
+                                </div>
+                                <small class="text-muted">
+                                    {% if order.delivery_status == 'delivered' %}
+                                        Package delivered successfully!
+                                    {% elif order.delivery_status == 'in_transit' %}
+                                        Package is on the way
+                                    {% elif order.delivery_status == 'picked_up' %}
+                                        Package has been picked up
+                                    {% else %}
+                                        Package is being processed
+                                    {% endif %}
+                                </small>
+                            </div>
+                            
+                            <!-- Additional Information -->
+                            <div class="row mt-4">
+                                <div class="col-md-6">
+                                    <div class="info-card">
+                                        <h6><i class="fas fa-credit-card"></i> Payment Information</h6>
+                                        <p><strong>Mode:</strong> {{ order.payment_mode.replace('_', ' ').title() }}</p>
+                                        <p><strong>Amount:</strong> ₹{{ order.total_amount }}</p>
+                                        <p><strong>Status:</strong> 
+                                            <span class="badge bg-{{ 'success' if order.payment_status == 'paid' else 'warning' if order.payment_status == 'pending' else 'danger' }}">
+                                                {{ order.payment_status.title() }}
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-card">
+                                        <h6><i class="fas fa-clock"></i> Delivery Information</h6>
+                                        <p><strong>Estimated:</strong> {{ order.estimated_delivery.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                                        {% if order.actual_delivery %}
+                                            <p><strong>Actual:</strong> {{ order.actual_delivery.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                                        {% endif %}
+                                        <p><strong>Order Date:</strong> {{ order.created_at.strftime('%B %d, %Y') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="text-center mt-4">
+                                <a href="{{ url_for('download_bill', reference_number=order.reference_number) }}" 
+                                   class="btn btn-outline-primary" target="_blank">
+                                    <i class="fas fa-download"></i> Download Bill
+                                </a>
+                                <a href="{{ url_for('order_details', reference_number=order.reference_number) }}" 
+                                   class="btn btn-primary">
+                                    <i class="fas fa-eye"></i> View Full Details
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

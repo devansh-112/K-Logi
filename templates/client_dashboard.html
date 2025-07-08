@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}My Orders - GotoFast Logistics{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2><i class="fas fa-user-circle"></i> My Orders Dashboard</h2>
+                    <p class="text-muted mb-0">Welcome back, {{ session.client_email }}</p>
+                </div>
+                <div>
+                    <a href="{{ url_for('place_order') }}" class="btn btn-primary me-2">
+                        <i class="fas fa-plus-circle"></i> New Order
+                    </a>
+                    <a href="{{ url_for('client_logout') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Statistics Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="dashboard-card text-center">
+                        <div class="stat-icon bg-primary text-white mx-auto">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <h3 class="text-primary">{{ total_orders }}</h3>
+                        <h6 class="text-muted">Total Orders</h6>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="dashboard-card text-center">
+                        <div class="stat-icon bg-warning text-white mx-auto">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3 class="text-warning">{{ pending_orders }}</h3>
+                        <h6 class="text-muted">Pending</h6>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="dashboard-card text-center">
+                        <div class="stat-icon bg-info text-white mx-auto">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <h3 class="text-info">{{ in_transit_orders }}</h3>
+                        <h6 class="text-muted">In Transit</h6>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="dashboard-card text-center">
+                        <div class="stat-icon bg-success text-white mx-auto">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h3 class="text-success">{{ delivered_orders }}</h3>
+                        <h6 class="text-muted">Delivered</h6>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Orders Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-list"></i> Your Orders</h5>
+                </div>
+                <div class="card-body">
+                    {% if orders %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Reference</th>
+                                        <th>Recipient</th>
+                                        <th>Destination</th>
+                                        <th>Weight</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in orders %}
+                                    <tr>
+                                        <td>
+                                            <strong class="text-primary">{{ order.reference_number }}</strong>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <strong>{{ order.recipient_name }}</strong><br>
+                                                <small class="text-muted">{{ order.recipient_phone }}</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <small>{{ order.delivery_address[:50] }}{% if order.delivery_address|length > 50 %}...{% endif %}</small>
+                                        </td>
+                                        <td>{{ order.weight }} kg</td>
+                                        <td><strong>₹{{ "%.2f"|format(order.total_amount) }}</strong></td>
+                                        <td>
+                                            {% if order.delivery_status == 'pending' %}
+                                                <span class="badge bg-warning">
+                                                    <i class="fas fa-clock"></i> Pending
+                                                </span>
+                                            {% elif order.delivery_status == 'picked_up' %}
+                                                <span class="badge bg-info">
+                                                    <i class="fas fa-truck-pickup"></i> Picked Up
+                                                </span>
+                                            {% elif order.delivery_status == 'in_transit' %}
+                                                <span class="badge bg-primary">
+                                                    <i class="fas fa-truck"></i> In Transit
+                                                </span>
+                                            {% elif order.delivery_status == 'delivered' %}
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check-circle"></i> Delivered
+                                                </span>
+                                            {% elif order.delivery_status == 'cancelled' %}
+                                                <span class="badge bg-danger">
+                                                    <i class="fas fa-times-circle"></i> Cancelled
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <small>{{ order.created_at.strftime('%d %b %Y') }}</small>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{{ url_for('track_package') }}?ref={{ order.reference_number }}" 
+                                                   class="btn btn-outline-primary btn-sm" 
+                                                   title="Track Order">
+                                                    <i class="fas fa-search"></i>
+                                                </a>
+                                                <a href="{{ url_for('order_details', reference_number=order.reference_number) }}" 
+                                                   class="btn btn-outline-info btn-sm" 
+                                                   title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                {% if order.invoice_generated %}
+                                                <a href="{{ url_for('download_bill', reference_number=order.reference_number) }}" 
+                                                   class="btn btn-outline-success btn-sm" 
+                                                   title="Download Invoice">
+                                                    <i class="fas fa-download"></i>
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No orders found</h5>
+                            <p class="text-muted">You haven't placed any orders yet.</p>
+                            <a href="{{ url_for('place_order') }}" class="btn btn-primary">
+                                <i class="fas fa-plus-circle"></i> Place Your First Order
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.table td {
+    vertical-align: middle;
+    color: var(--text-color);
+}
+
+.btn-group-sm > .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.85rem;
+    }
+    
+    .btn-group {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .btn-group .btn {
+        width: 100%;
+        margin: 0;
+    }
+}
+</style>
+{% endblock %}

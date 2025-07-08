@@ -1,0 +1,390 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us - {{ contact_settings.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Hero Section -->
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-primary">
+                    {{ contact_content.get('hero_title', 'Contact Us') }}
+                </h1>
+                <p class="lead text-muted">
+                    {{ contact_content.get('hero_subtitle', 'Get in touch with us for any questions or support') }}
+                </p>
+            </div>
+
+            <div class="row">
+                <!-- Contact Form -->
+                <div class="col-lg-8">
+                    <div class="card shadow-lg border-0">
+                        <div class="card-body p-5">
+                            <h3 class="card-title mb-4">
+                                <i class="fas fa-envelope text-primary"></i> Send us a Message
+                            </h3>
+                            
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                                {% if messages %}
+                                    {% for category, message in messages %}
+                                        <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+                                            {{ message }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endwith %}
+
+                            <form method="POST" id="contactForm">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="name" class="form-label">Full Name *</label>
+                                        <input type="text" class="form-control" id="name" name="name" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="email" class="form-label">Email Address *</label>
+                                        <input type="email" class="form-control" id="email" name="email" required>
+                                        <div class="invalid-feedback">
+                                            Please enter a valid email address.
+                                        </div>
+                                        <div class="valid-feedback">
+                                            Email address looks good!
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="phone" class="form-label">Phone Number</label>
+                                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="+1 (555) 123-4567">
+                                        <div class="invalid-feedback">
+                                            Please enter a valid phone number.
+                                        </div>
+                                        <div class="valid-feedback">
+                                            Phone number looks good!
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="category" class="form-label">Category *</label>
+                                        <select class="form-select" id="category" name="category" required>
+                                            <option value="">Select Category</option>
+                                            <option value="general">General Inquiry</option>
+                                            <option value="technical">Technical Support</option>
+                                            <option value="billing">Billing & Payment</option>
+                                            <option value="delivery">Delivery Issues</option>
+                                            <option value="partnership">Partnership</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="subject" class="form-label">Subject *</label>
+                                    <input type="text" class="form-control" id="subject" name="subject" required>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="message" class="form-label">Message *</label>
+                                    <textarea class="form-control" id="message" name="message" rows="5" 
+                                              placeholder="Please describe your inquiry in detail..." required></textarea>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary btn-lg w-100" id="submitBtn">
+                                    <i class="fas fa-paper-plane"></i> Send Message
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="col-lg-4">
+                    <div class="card shadow-lg border-0 h-100">
+                        <div class="card-body p-5">
+                            <h3 class="card-title mb-4">
+                                <i class="fas fa-info-circle text-primary"></i> Contact Information
+                            </h3>
+                            
+                            <!-- Dynamic Contact Info -->
+                            {% if contact_content.get('contact_info') %}
+                                {{ contact_content.get('contact_info') | safe }}
+                            {% else %}
+                                <!-- Fallback Contact Info -->
+                                <div class="contact-item mb-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="contact-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Address</h6>
+                                            <p class="text-muted mb-0">{{ contact_settings.address or '123 Business Street, City, State 12345' }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="contact-item mb-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="contact-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                            <i class="fas fa-phone"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Phone</h6>
+                                            <p class="text-muted mb-0">{{ contact_settings.phone or '+1 (555) 123-4567' }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="contact-item mb-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="contact-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                            <i class="fas fa-envelope"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Email</h6>
+                                            <p class="text-muted mb-0">{{ contact_settings.email or 'info@company.com' }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="contact-item mb-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="contact-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Business Hours</h6>
+                                            <p class="text-muted mb-0">{{ contact_settings.business_hours or 'Monday - Friday: 9:00 AM - 6:00 PM' }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <!-- Social Media Links -->
+                            <div class="mt-4">
+                                <h6 class="mb-3">Follow Us</h6>
+                                <div class="d-flex gap-2">
+                                    <a href="#" class="btn btn-outline-primary btn-sm">
+                                        <i class="fab fa-facebook-f"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-outline-primary btn-sm">
+                                        <i class="fab fa-twitter"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-outline-primary btn-sm">
+                                        <i class="fab fa-linkedin-in"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-outline-primary btn-sm">
+                                        <i class="fab fa-instagram"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Content -->
+            {% if contact_content.get('main_content') %}
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="card shadow-lg border-0">
+                        <div class="card-body p-5">
+                            {{ contact_content.get('main_content') | safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.contact-icon {
+    transition: all 0.3s ease;
+}
+
+.contact-item:hover .contact-icon {
+    transform: scale(1.1);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+}
+
+/* Text visibility fixes */
+.form-control, .form-select {
+    color: #111 !important;
+    background-color: #fff !important;
+}
+
+.form-label {
+    color: #111 !important;
+    font-weight: 600;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+.card-title, h1, h2, h3, h4, h5, h6 {
+    color: #111 !important;
+}
+
+.alert {
+    color: #111 !important;
+}
+
+/* Validation styles */
+.form-control.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.form-control.is-valid {
+    border-color: #198754;
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+}
+
+.invalid-feedback {
+    display: block;
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.valid-feedback {
+    display: block;
+    color: #198754;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('contactForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const emailField = document.getElementById('email');
+    const phoneField = document.getElementById('phone');
+    
+    // Email validation function
+    function validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+    
+    // Phone validation function
+    function validatePhone(phone) {
+        const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+        return phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''));
+    }
+    
+    // Real-time email validation
+    emailField.addEventListener('input', function() {
+        const email = this.value.trim();
+        const isValid = validateEmail(email);
+        
+        this.classList.remove('is-valid', 'is-invalid');
+        
+        if (email === '') {
+            this.classList.remove('is-valid', 'is-invalid');
+        } else if (isValid) {
+            this.classList.add('is-valid');
+            this.classList.remove('is-invalid');
+        } else {
+            this.classList.add('is-invalid');
+            this.classList.remove('is-valid');
+        }
+        
+        updateSubmitButton();
+    });
+    
+    // Real-time phone validation
+    phoneField.addEventListener('input', function() {
+        const phone = this.value.trim();
+        const isValid = validatePhone(phone);
+        
+        this.classList.remove('is-valid', 'is-invalid');
+        
+        if (phone === '') {
+            this.classList.remove('is-valid', 'is-invalid');
+        } else if (isValid) {
+            this.classList.add('is-valid');
+            this.classList.remove('is-invalid');
+        } else {
+            this.classList.add('is-invalid');
+            this.classList.remove('is-valid');
+        }
+        
+        updateSubmitButton();
+    });
+    
+    // Form validation
+    form.addEventListener('input', function() {
+        updateSubmitButton();
+    });
+    
+    function updateSubmitButton() {
+        const requiredFields = form.querySelectorAll('[required]');
+        let isValid = true;
+        
+        // Check required fields
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+            }
+        });
+        
+        // Check email validation
+        const email = emailField.value.trim();
+        if (email && !validateEmail(email)) {
+            isValid = false;
+        }
+        
+        // Check phone validation (if provided)
+        const phone = phoneField.value.trim();
+        if (phone && !validatePhone(phone)) {
+            isValid = false;
+        }
+        
+        submitBtn.disabled = !isValid;
+        submitBtn.style.opacity = isValid ? '1' : '0.6';
+    }
+    
+    // Initial check
+    form.dispatchEvent(new Event('input'));
+    
+    // Form submission validation
+    form.addEventListener('submit', function(e) {
+        const email = emailField.value.trim();
+        const phone = phoneField.value.trim();
+        
+        if (email && !validateEmail(email)) {
+            e.preventDefault();
+            alert('Please enter a valid email address.');
+            emailField.focus();
+            return false;
+        }
+        
+        if (phone && !validatePhone(phone)) {
+            e.preventDefault();
+            alert('Please enter a valid phone number.');
+            phoneField.focus();
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Your Package - GotoFast Logistics</title>
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-bg: #f8fafc;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--card-shadow);
+        }
+
+        .tracking-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .tracking-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--card-shadow-hover);
+            margin-bottom: 2rem;
+            border: 1px solid #e5e7eb;
+        }
+
+        .tracking-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .tracking-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .tracking-status {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-picked_up {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-in_transit {
+            background: #bfdbfe;
+            color: #1d4ed8;
+        }
+
+        .status-delivered {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .tracking-timeline {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .timeline-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-right: 1.5rem;
+            z-index: 2;
+            position: relative;
+        }
+
+        .timeline-content {
+            flex: 1;
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-date {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 30px;
+            top: 60px;
+            bottom: -40px;
+            width: 2px;
+            background: #e5e7eb;
+            z-index: 1;
+        }
+
+        .timeline-item:last-child .timeline-line {
+            display: none;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .info-card {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .search-again {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-track {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-track:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+        }
+
+        .back-btn {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            color: var(--secondary-color);
+            transform: translateX(-5px);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+        }
+
+        .no-results i {
+            font-size: 4rem;
+            color: #d1d5db;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .tracking-card {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+            
+            .tracking-number {
+                font-size: 1.5rem;
+            }
+            
+            .timeline-item {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .timeline-icon {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+            
+            .timeline-line {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-shipping-fast"></i> GotoFast Logistics
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('place_order') }}">Book Shipment</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('track_package') }}">Track Package</a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.get_id().startswith('admin_') %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
+                            </li>
+                        {% elif current_user.get_id().startswith('partner_') %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('partner_dashboard') }}">Dashboard</a>
+                            </li>
+                        {% endif %}
+                    {% else %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user"></i> Login
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ url_for('partner_login') }}">Partner Login</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('admin_login') }}">Admin Login</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="tracking-container">
+        <a href="{{ url_for('index') }}" class="back-btn">
+            <i class="fas fa-arrow-left me-2"></i> Back to Home
+        </a>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if order %}
+            <!-- Tracking Results -->
+            <div class="tracking-card">
+                <div class="tracking-header">
+                    <div class="tracking-number">{{ order.reference_number }}</div>
+                    <div class="tracking-status status-{{ order.delivery_status }}">
+                        {{ order.delivery_status.replace('_', ' ').title() }}
+                    </div>
+                </div>
+
+                <!-- Package Information -->
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="info-label">Customer</div>
+                        <div class="info-value">{{ order.customer_name }}</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Destination</div>
+                        <div class="info-value">{{ order.zone.name }}</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Weight</div>
+                        <div class="info-value">{{ order.weight }} kg</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Total Amount</div>
+                        <div class="info-value">₹{{ "%.2f"|format(order.total_amount) }}</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Estimated Delivery</div>
+                        <div class="info-value">{{ order.estimated_delivery.strftime('%d %b %Y') }}</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Payment Status</div>
+                        <div class="info-value">{{ order.payment_status.title() }}</div>
+                    </div>
+                </div>
+
+                <!-- Tracking Timeline -->
+                <div class="tracking-timeline">
+                    <h4 style="margin-bottom: 2rem; color: #1f2937;">Tracking Timeline</h4>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-icon" style="background: var(--success-color);">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Order Placed</div>
+                            <div class="timeline-date">{{ order.created_at.strftime('%d %b %Y at %I:%M %p') }}</div>
+                        </div>
+                        <div class="timeline-line"></div>
+                    </div>
+
+                    {% if order.delivery_status in ['picked_up', 'in_transit', 'delivered'] %}
+                    <div class="timeline-item">
+                        <div class="timeline-icon" style="background: var(--primary-color);">
+                            <i class="fas fa-truck-pickup"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Package Picked Up</div>
+                            <div class="timeline-date">Package collected from pickup location</div>
+                        </div>
+                        <div class="timeline-line"></div>
+                    </div>
+                    {% endif %}
+
+                    {% if order.delivery_status in ['in_transit', 'delivered'] %}
+                    <div class="timeline-item">
+                        <div class="timeline-icon" style="background: var(--warning-color);">
+                            <i class="fas fa-shipping-fast"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">In Transit</div>
+                            <div class="timeline-date">Package is on the way to destination</div>
+                        </div>
+                        <div class="timeline-line"></div>
+                    </div>
+                    {% endif %}
+
+                    {% if order.delivery_status == 'delivered' %}
+                    <div class="timeline-item">
+                        <div class="timeline-icon" style="background: var(--success-color);">
+                            <i class="fas fa-box-check"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Delivered</div>
+                            <div class="timeline-date">
+                                {% if order.actual_delivery %}
+                                    {{ order.actual_delivery.strftime('%d %b %Y at %I:%M %p') }}
+                                {% else %}
+                                    Delivered successfully
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% elif order.delivery_status == 'cancelled' %}
+                    <div class="timeline-item">
+                        <div class="timeline-icon" style="background: var(--danger-color);">
+                            <i class="fas fa-times"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Cancelled</div>
+                            <div class="timeline-date">Order has been cancelled</div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Search Again -->
+        <div class="search-again">
+            <h4 style="margin-bottom: 1.5rem; color: #1f2937;">Track Another Package</h4>
+            <form action="{{ url_for('track_package') }}" method="POST">
+                <input type="text" 
+                       class="search-input" 
+                       name="reference_number" 
+                       placeholder="Enter tracking number" 
+                       required>
+                <button type="submit" class="btn-track">
+                    <i class="fas fa-search"></i> Track Package
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Format tracking number input
+        const trackingInputs = document.querySelectorAll('input[name="reference_number"]');
+        trackingInputs.forEach(input => {
+            input.addEventListener('input', function() {
+                this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            });
+        });
+
+        // Animate timeline items on load
+        const timelineItems = document.querySelectorAll('.timeline-item');
+        timelineItems.forEach((item, index) => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
+            item.style.transition = 'all 0.6s ease';
+            
+            setTimeout(() => {
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+            }, index * 200);
+        });
+    </script>
+</body>
+</html>

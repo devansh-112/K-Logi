@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}About Us - {{ contact_settings.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <!-- Hero Section -->
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-primary">
+                    {{ about_content.get('hero_title', 'About Us') }}
+                </h1>
+                <p class="lead text-muted">
+                    {{ about_content.get('hero_subtitle', 'Learn more about our company and mission') }}
+                </p>
+            </div>
+
+            <!-- Main Content -->
+            {% if about_content.get('main_content') %}
+            <div class="card shadow-lg border-0 mb-5">
+                <div class="card-body p-5">
+                    {{ about_content.get('main_content') | safe }}
+                </div>
+            </div>
+            {% else %}
+            <!-- Default About Content -->
+            <div class="card shadow-lg border-0 mb-5">
+                <div class="card-body p-5">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <h3 class="mb-4">Our Story</h3>
+                            <p class="lead text-muted">
+                                {{ contact_settings.company_name }} was founded with a simple mission: to revolutionize the logistics industry by providing reliable, efficient, and transparent delivery services.
+                            </p>
+                            <p>
+                                We understand that in today's fast-paced world, businesses and individuals need a logistics partner they can trust. That's why we've built our platform with cutting-edge technology and a customer-first approach.
+                            </p>
+                        </div>
+                        <div class="col-lg-6">
+                            <h3 class="mb-4">Our Mission</h3>
+                            <p>
+                                To provide seamless, reliable, and cost-effective logistics solutions that empower businesses to grow and individuals to receive their packages with confidence.
+                            </p>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>Reliable delivery services</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Real-time tracking</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Transparent pricing</li>
+                                <li><i class="fas fa-check text-success me-2"></i>24/7 customer support</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Contact Information -->
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="card shadow-lg border-0">
+                        <div class="card-body p-5 text-center">
+                            <h3 class="mb-4">Get in Touch</h3>
+                            <p class="text-muted mb-4">
+                                Have questions about our services? We'd love to hear from you.
+                            </p>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="contact-item">
+                                        <i class="fas fa-phone fa-2x text-primary mb-3"></i>
+                                        <h5>Phone</h5>
+                                        <p class="text-muted">{{ contact_settings.phone or '+1 (555) 123-4567' }}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="contact-item">
+                                        <i class="fas fa-envelope fa-2x text-primary mb-3"></i>
+                                        <h5>Email</h5>
+                                        <p class="text-muted">{{ contact_settings.email or 'info@company.com' }}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="contact-item">
+                                        <i class="fas fa-map-marker-alt fa-2x text-primary mb-3"></i>
+                                        <h5>Address</h5>
+                                        <p class="text-muted">{{ contact_settings.address or '123 Business Street, City, State 12345' }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <a href="{{ url_for('contact_us') }}" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-envelope"></i> Contact Us
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.contact-item {
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+
+.contact-item:hover {
+    transform: translateY(-5px);
+}
+
+.card {
+    border-radius: 16px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+}
+</style>
+{% endblock %} 

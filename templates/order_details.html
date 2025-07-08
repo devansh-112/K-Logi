@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Order Details - {{ order.reference_number }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="fas fa-receipt"></i> Order Confirmation</h4>
+                        <span class="badge bg-light text-dark">{{ order.reference_number }}</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-success">
+                        <h5><i class="fas fa-check-circle"></i> Order Placed Successfully!</h5>
+                        <p class="mb-0">Your order has been placed successfully. You can track your package using the reference number above.</p>
+                    </div>
+                    
+                    <!-- Order Summary -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h6><i class="fas fa-user"></i> Customer Information</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Name:</strong> {{ order.customer_name }}</p>
+                                    <p><strong>Email:</strong> {{ order.customer_email }}</p>
+                                    <p><strong>Phone:</strong> {{ order.customer_phone }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h6><i class="fas fa-box"></i> Package Information</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Zone:</strong> {{ order.zone.name }}</p>
+                                    <p><strong>Weight:</strong> {{ order.weight }} kg</p>
+                                    <p><strong>Dimensions:</strong> {{ order.length }} × {{ order.width }} × {{ order.height }} cm</p>
+                                    {% if order.package_description %}
+                                        <p><strong>Description:</strong> {{ order.package_description }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Addresses -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h6><i class="fas fa-map-marker-alt"></i> Pickup Address</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p>{{ order.pickup_address }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h6><i class="fas fa-map-marker-alt"></i> Delivery Address</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p>{{ order.delivery_address }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Billing Information -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6><i class="fas fa-credit-card"></i> Billing Information</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <table class="table">
+                                        <tr>
+                                            <td>Base Cost ({{ order.zone.base_rate }}/kg × {{ order.weight }}kg)</td>
+                                            <td class="text-end">₹{{ (order.zone.base_rate * order.weight) | round(2) }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Size Adjustment ({{ order.length }}×{{ order.width }}×{{ order.height }} cm)</td>
+                                            <td class="text-end">
+                                                {% set volume = (order.length * order.width * order.height) / 1000000 %}
+                                                {% set volume_cost = volume * 50 %}
+                                                ₹{{ volume_cost | round(2) }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Payment Processing Fee</td>
+                                            <td class="text-end">
+                                                {% set payment_fees = {'cash_on_delivery': 0.02, 'online_payment': 0.0, 'card_payment': 0.015} %}
+                                                {% set base_cost = order.zone.base_rate * order.weight %}
+                                                {% set size_cost = base_cost * (size_multipliers.get(order.size, 1.0) - 1) %}
+                                                {% set payment_fee = (base_cost + size_cost) * payment_fees.get(order.payment_mode, 0.0) %}
+                                                ₹{{ payment_fee | round(2) }}
+                                            </td>
+                                        </tr>
+                                        <tr class="table-primary">
+                                            <td><strong>Total Amount</strong></td>
+                                            <td class="text-end"><strong>₹{{ order.total_amount }}</strong></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <h5 class="text-primary">Payment Mode</h5>
+                                        <p class="badge bg-primary">{{ order.payment_mode.replace('_', ' ').title() }}</p>
+                                        <h5 class="text-success mt-3">Payment Status</h5>
+                                        <p class="badge bg-{{ 'success' if order.payment_status == 'paid' else 'warning' }}">
+                                            {{ order.payment_status.title() }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Delivery Information -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6><i class="fas fa-clock"></i> Delivery Information</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <h6>Order Date</h6>
+                                        <p class="text-muted">{{ order.created_at.strftime('%B %d, %Y') }}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <h6>Estimated Delivery</h6>
+                                        <p class="text-primary">{{ order.estimated_delivery.strftime('%B %d, %Y') }}</p>
+                                        <small class="text-muted">{{ order.estimated_delivery.strftime('%I:%M %p') }}</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <h6>Delivery Status</h6>
+                                        <span class="badge bg-{{ 'success' if order.delivery_status == 'delivered' else 'warning' if order.delivery_status == 'in_transit' else 'info' }}">
+                                            {{ order.delivery_status.replace('_', ' ').title() }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="text-center">
+                        <a href="{{ url_for('download_bill', reference_number=order.reference_number) }}" 
+                           class="btn btn-primary me-2" target="_blank">
+                            <i class="fas fa-download"></i> Download Bill
+                        </a>
+                        <a href="{{ url_for('track_package') }}" class="btn btn-outline-primary me-2">
+                            <i class="fas fa-search"></i> Track Package
+                        </a>
+                        <a href="{{ url_for('place_order') }}" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Place Another Order
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

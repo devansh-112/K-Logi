@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Overall Report - GotoFast Logistics{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5 fw-bold mb-3">
+                <i class="fas fa-chart-bar"></i> Overall Report
+            </h1>
+            <p class="lead mb-0">Business summary, revenue, and order analytics</p>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-end gap-2">
+            <a href="{{ url_for('download_report_pdf') }}" class="btn btn-outline-danger">
+                <i class="fas fa-file-pdf"></i> Download PDF
+            </a>
+            <a href="{{ url_for('download_report_csv') }}" class="btn btn-outline-success">
+                <i class="fas fa-file-csv"></i> Download CSV
+            </a>
+        </div>
+    </div>
+    <div class="row g-4 mb-4">
+        <div class="col-md-2">
+            <div class="dashboard-card text-center">
+                <div class="stat-icon bg-primary text-white mx-auto">
+                    <i class="fas fa-box"></i>
+                </div>
+                <h3 class="text-primary">{{ total_orders }}</h3>
+                <h6 class="text-muted">Total Orders</h6>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="dashboard-card text-center">
+                <div class="stat-icon bg-success text-white mx-auto">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3 class="text-success">{{ delivered_orders }}</h3>
+                <h6 class="text-muted">Delivered</h6>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="dashboard-card text-center">
+                <div class="stat-icon bg-warning text-white mx-auto">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3 class="text-warning">{{ pending_orders }}</h3>
+                <h6 class="text-muted">Pending</h6>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="dashboard-card text-center">
+                <div class="stat-icon bg-info text-white mx-auto">
+                    <i class="fas fa-truck"></i>
+                </div>
+                <h3 class="text-info">{{ in_transit_orders }}</h3>
+                <h6 class="text-muted">In Transit</h6>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="dashboard-card text-center">
+                <div class="stat-icon bg-danger text-white mx-auto">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <h3 class="text-danger">{{ cancelled_orders }}</h3>
+                <h6 class="text-muted">Cancelled</h6>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="dashboard-card text-center">
+                <div class="stat-icon bg-dark text-white mx-auto">
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+                <h3 class="text-dark">₹{{ '%.2f'|format(total_revenue) }}</h3>
+                <h6 class="text-muted">Total Revenue</h6>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-lg-6 mb-4">
+            <div class="card bg-dark border-primary">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-line"></i> Revenue by Month</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card bg-dark border-info">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-pie"></i> Orders by Status</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-lg-6 mb-4">
+            <div class="card bg-dark border-success">
+                <div class="card-header">
+                    <h5><i class="fas fa-trophy"></i> Top Delivery Partners</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-dark table-striped">
+                        <thead>
+                            <tr>
+                                <th>Partner</th>
+                                <th>Orders Delivered</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for partner, count in top_partners %}
+                            <tr>
+                                <td>{{ partner }}</td>
+                                <td>{{ count }}</td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="2">No data</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card bg-dark border-warning">
+                <div class="card-header">
+                    <h5><i class="fas fa-map-marked-alt"></i> Top Zones</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-dark table-striped">
+                        <thead>
+                            <tr>
+                                <th>Zone</th>
+                                <th>Orders</th>
+                                <th>Revenue (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for zone, count, revenue in top_zones %}
+                            <tr>
+                                <td>{{ zone }}</td>
+                                <td>{{ count }}</td>
+                                <td>₹{{ '%.2f'|format(revenue or 0) }}</td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="3">No data</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const months = {{ months|tojson }};
+const revenues = {{ revenues|tojson }};
+const statusLabels = {{ status_labels|tojson }};
+const statusValues = {{ status_values|tojson }};
+
+const revenueChart = new Chart(document.getElementById('revenueChart'), {
+    type: 'line',
+    data: {
+        labels: months,
+        datasets: [{
+            label: 'Revenue (₹)',
+            data: revenues,
+            borderColor: '#2563eb',
+            backgroundColor: 'rgba(37,99,235,0.1)',
+            fill: true,
+            tension: 0.3
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            title: { display: false }
+        },
+        scales: {
+            y: { beginAtZero: true }
+        }
+    }
+});
+
+const statusChart = new Chart(document.getElementById('statusChart'), {
+    type: 'doughnut',
+    data: {
+        labels: statusLabels,
+        datasets: [{
+            label: 'Orders',
+            data: statusValues,
+            backgroundColor: [
+                '#10b981', '#f59e0b', '#3b82f6', '#ef4444', '#6366f1', '#f43f5e'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom' },
+            title: { display: false }
+        }
+    }
+});
+</script>
+{% endblock %} 

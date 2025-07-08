@@ -1,0 +1,385 @@
+{% extends "base.html" %}
+
+{% block title %}Place Order - GotoFast Logistics{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-5 fw-bold mb-3">
+                    <i class="fas fa-shipping-fast"></i> Place New Order
+                </h1>
+                <p class="lead mb-0">
+                    Quick and easy order placement with instant pricing calculation
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <div class="d-flex gap-3 justify-content-lg-end justify-content-center">
+                    <div class="feature-highlight">
+                        <i class="fas fa-calculator text-warning me-2"></i>
+                        <span>Instant Pricing</span>
+                    </div>
+                    <div class="feature-highlight">
+                        <i class="fas fa-clock text-warning me-2"></i>
+                        <span>Fast Processing</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <form method="POST" id="orderForm">
+                        <!-- Customer Information -->
+                        <div class="section-header">
+                            <h5 class="text-primary"><i class="fas fa-user"></i> Customer Information</h5>
+                            <hr>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="customer_name" class="form-label">Full Name *</label>
+                                <input type="text" class="form-control" id="customer_name" name="customer_name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="customer_email" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" id="customer_email" name="customer_email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label for="customer_phone" class="form-label">Phone Number *</label>
+                                <input type="tel" class="form-control" id="customer_phone" name="customer_phone" required>
+                            </div>
+                        </div>
+
+                        <!-- Address Information -->
+                        <div class="section-header mt-4">
+                            <h5 class="text-primary"><i class="fas fa-map-marker-alt"></i> Address Information</h5>
+                            <hr>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="pickup_address" class="form-label">Pickup Address *</label>
+                                <textarea class="form-control" id="pickup_address" name="pickup_address" rows="3" required></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mt-2">
+                            <div class="col-12">
+                                <label for="delivery_address" class="form-label">Delivery Address *</label>
+                                <textarea class="form-control" id="delivery_address" name="delivery_address" rows="3" required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Package Information -->
+                        <div class="section-header mt-4">
+                            <h5 class="text-primary"><i class="fas fa-box"></i> Package Information</h5>
+                            <hr>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="zone_id" class="form-label">Delivery Zone *</label>
+                                <select class="form-select" id="zone_id" name="zone_id" required>
+                                    <option value="">Select Zone</option>
+                                    {% for zone in zones %}
+                                        <option value="{{ zone.id }}" data-rate="{{ zone.base_rate }}" data-days="{{ zone.delivery_days }}">
+                                            {{ zone.name }} (₹{{ zone.base_rate }}/kg - {{ zone.delivery_days }} days)
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <small class="text-muted">Choose the delivery zone based on your destination</small>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="weight" class="form-label">Weight (kg) *</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="weight" name="weight" min="0.1" step="0.1" required>
+                                    <span class="input-group-text">kg</span>
+                                </div>
+                                <small class="text-muted">Minimum 0.1 kg</small>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="quantity" class="form-label">Quantity *</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="1" required>
+                                    <span class="input-group-text">pcs</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-4">
+                                <label for="length" class="form-label">Length (cm) *</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="length" name="length" min="1" step="0.1" required>
+                                    <span class="input-group-text">cm</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="width" class="form-label">Width (cm) *</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="width" name="width" min="1" step="0.1" required>
+                                    <span class="input-group-text">cm</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="height" class="form-label">Height (cm) *</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="height" name="height" min="1" step="0.1" required>
+                                    <span class="input-group-text">cm</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label for="payment_mode" class="form-label">Payment Mode *</label>
+                                <select class="form-select" id="payment_mode" name="payment_mode" required>
+                                    <option value="">Select Payment Mode</option>
+                                    <option value="cash_on_delivery" data-fee="2.0">💳 Cash on Delivery (+2% fee)</option>
+                                    <option value="online_payment" data-fee="0.0">💻 Online Payment (No fee)</option>
+                                    <option value="card_payment" data-fee="1.5">💳 Card Payment (+1.5% fee)</option>
+                                </select>
+                                <small class="text-muted">Choose your preferred payment method</small>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" id="insurance_required" name="insurance_required">
+                                    <label class="form-check-label" for="insurance_required">
+                                        <i class="fas fa-shield-alt"></i> Add Insurance Coverage
+                                    </label>
+                                    <small class="text-muted d-block">Protect your package with insurance (0.5% of declared value)</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mt-2" id="insurance_section" style="display: none;">
+                            <div class="col-md-6">
+                                <label for="insurance_value" class="form-label">Declared Value for Insurance (₹)</label>
+                                <input type="number" class="form-control" id="insurance_value" name="insurance_value" min="0" step="100" placeholder="Enter package value">
+                                <small class="text-muted">Insurance premium: 0.5% of declared value</small>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mt-2">
+                            <div class="col-12">
+                                <label for="package_description" class="form-label">Package Description</label>
+                                <textarea class="form-control" id="package_description" name="package_description" rows="2" placeholder="Optional: Describe your package contents"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Recipient Information -->
+                        <div class="section-header mt-4">
+                            <h5 class="text-primary"><i class="fas fa-user-check"></i> Recipient Information</h5>
+                            <hr>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="recipient_name" class="form-label">Recipient Name *</label>
+                                <input type="text" class="form-control" id="recipient_name" name="recipient_name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="recipient_phone" class="form-label">Recipient Phone *</label>
+                                <input type="tel" class="form-control" id="recipient_phone" name="recipient_phone" required>
+                            </div>
+                        </div>
+
+                        <!-- Price Calculation -->
+                        <div class="section-header mt-4">
+                            <h5 class="text-primary"><i class="fas fa-calculator"></i> Price Calculation</h5>
+                            <hr>
+                        </div>
+                        
+                        <div class="price-breakdown card bg-light p-3 mb-3" id="priceBreakdown" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Shipping Cost:</strong> <span id="baseCost">₹0.00</span></p>
+                                    <p><strong>Volume Info:</strong> <span id="sizeAdjustment">-</span></p>
+                                    <p><strong>Payment Fee:</strong> <span id="paymentFee">₹0.00</span></p>
+                                    <p><strong>Insurance Fee:</strong> <span id="insuranceFee">₹0.00</span></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Estimated Delivery:</strong> <span id="estimatedDelivery">-</span></p>
+                                    <h4 class="text-primary"><strong>Total Amount: <span id="totalAmount">₹0.00</span></strong></h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="button" class="btn btn-outline-primary" onclick="calculatePrice()">
+                                <i class="fas fa-calculator"></i> Calculate Price
+                            </button>
+                            <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
+                                <i class="fas fa-check"></i> Place Order
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function calculatePrice() {
+    const zoneId = document.getElementById('zone_id').value;
+    const weight = parseFloat(document.getElementById('weight').value);
+    const length = parseFloat(document.getElementById('length').value);
+    const width = parseFloat(document.getElementById('width').value);
+    const height = parseFloat(document.getElementById('height').value);
+    const quantity = parseInt(document.getElementById('quantity').value);
+    const paymentMode = document.getElementById('payment_mode').value;
+    const insuranceRequired = document.getElementById('insurance_required').checked;
+    const insuranceValue = parseFloat(document.getElementById('insurance_value').value || 0);
+    
+    if (!zoneId || !weight || !length || !width || !height || !paymentMode) {
+        alert('Please fill in all required fields');
+        return;
+    }
+    
+    // Get zone data
+    const zoneSelect = document.getElementById('zone_id');
+    const selectedOption = zoneSelect.options[zoneSelect.selectedIndex];
+    const baseRate = parseFloat(selectedOption.dataset.rate);
+    const deliveryDays = parseInt(selectedOption.dataset.days);
+    
+    // Calculate costs
+    const baseCost = baseRate * weight * quantity;
+    
+    // Volume calculation
+    const volume = (length * width * height) / 1000000; // Convert cm³ to m³
+    const volumeCost = volume * 50; // ₹50 per cubic meter
+    
+    // Use higher of weight-based or volume-based pricing
+    const shippingCost = Math.max(baseCost, volumeCost);
+    
+    // Payment fees
+    const paymentFees = {
+        'cash_on_delivery': 0.02,
+        'online_payment': 0.0,
+        'card_payment': 0.015
+    };
+    const paymentFeeRate = paymentFees[paymentMode] || 0.0;
+    const paymentFee = shippingCost * paymentFeeRate;
+    
+    // Insurance calculation
+    let insuranceCost = 0;
+    if (insuranceRequired && insuranceValue > 0) {
+        insuranceCost = insuranceValue * 0.005; // 0.5% of declared value
+    }
+    
+    const totalAmount = shippingCost + paymentFee + insuranceCost;
+    
+    // Calculate estimated delivery
+    const currentDate = new Date();
+    const deliveryDate = new Date(currentDate);
+    let addedDays = 0;
+    
+    // Skip weekends for business days
+    while (addedDays < deliveryDays) {
+        deliveryDate.setDate(deliveryDate.getDate() + 1);
+        if (deliveryDate.getDay() !== 0 && deliveryDate.getDay() !== 6) {
+            addedDays++;
+        }
+    }
+    
+    // Update UI
+    document.getElementById('baseCost').textContent = `₹${shippingCost.toFixed(2)}`;
+    document.getElementById('sizeAdjustment').textContent = `Volume: ${volume.toFixed(3)} m³`;
+    document.getElementById('paymentFee').textContent = `₹${paymentFee.toFixed(2)}`;
+    document.getElementById('insuranceFee').textContent = `₹${insuranceCost.toFixed(2)}`;
+    document.getElementById('totalAmount').textContent = `₹${totalAmount.toFixed(2)}`;
+    document.getElementById('estimatedDelivery').textContent = deliveryDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    
+    // Show price breakdown
+    document.getElementById('priceBreakdown').style.display = 'block';
+    document.getElementById('submitBtn').disabled = false;
+}
+
+// Auto-calculate when fields change
+document.addEventListener('DOMContentLoaded', function() {
+    const fields = ['zone_id', 'weight', 'length', 'width', 'height', 'quantity', 'payment_mode', 'insurance_required', 'insurance_value'];
+    fields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('change', function() {
+                checkFormCompletion();
+                if (document.getElementById('priceBreakdown').style.display === 'block') {
+                    calculatePrice();
+                }
+            });
+        }
+    });
+    
+    // Insurance checkbox toggle
+    document.getElementById('insurance_required').addEventListener('change', function() {
+        const insuranceSection = document.getElementById('insurance_section');
+        if (this.checked) {
+            insuranceSection.style.display = 'block';
+        } else {
+            insuranceSection.style.display = 'none';
+            document.getElementById('insurance_value').value = '';
+        }
+        
+        checkFormCompletion();
+        if (document.getElementById('priceBreakdown').style.display === 'block') {
+            calculatePrice();
+        }
+    });
+    
+    // Check form completion on page load
+    checkFormCompletion();
+    
+    // Add event listeners for text input fields
+    const textFields = ['customer_name', 'customer_email', 'customer_phone', 'pickup_address', 'delivery_address', 'recipient_name', 'recipient_phone'];
+    textFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('input', checkFormCompletion);
+        }
+    });
+});
+
+// Function to check if all required fields are filled
+function checkFormCompletion() {
+    const requiredFields = [
+        'customer_name', 'customer_email', 'customer_phone', 
+        'pickup_address', 'delivery_address', 'zone_id', 
+        'weight', 'length', 'width', 'height', 
+        'payment_mode', 'recipient_name', 'recipient_phone'
+    ];
+    
+    let allFilled = true;
+    requiredFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field && !field.value.trim()) {
+            allFilled = false;
+        }
+    });
+    
+    // Enable submit button if all required fields are filled
+    const submitBtn = document.getElementById('submitBtn');
+    if (submitBtn) {
+        submitBtn.disabled = !allFilled;
+    }
+}
+</script>
+{% endblock %}

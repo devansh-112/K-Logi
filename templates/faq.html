@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block title %}FAQ - {{ contact_settings.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Hero Section -->
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-primary">
+                    {{ faq_content.get('hero_title', 'Frequently Asked Questions') }}
+                </h1>
+                <p class="lead text-muted">
+                    {{ faq_content.get('hero_subtitle', 'Find answers to common questions about our services') }}
+                </p>
+            </div>
+
+            <!-- FAQ Content -->
+            {% if faq_content.get('faq_items') %}
+            <div class="card shadow-lg border-0 mb-5">
+                <div class="card-body p-5">
+                    {{ faq_content.get('faq_items') | safe }}
+                </div>
+            </div>
+            {% else %}
+            <!-- Default FAQ Content -->
+            <div class="card shadow-lg border-0 mb-5">
+                <div class="card-body p-5">
+                    <div class="accordion" id="faqAccordion">
+                        <!-- General Questions -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading1">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">
+                                    How do I place an order?
+                                </button>
+                            </h2>
+                            <div id="collapse1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    You can place an order by visiting our "Place Order" page, filling out the required information including pickup and delivery addresses, package details, and contact information. Once submitted, you'll receive a tracking number to monitor your shipment.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading2">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">
+                                    How can I track my package?
+                                </button>
+                            </h2>
+                            <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    You can track your package by visiting our "Track Package" page and entering your tracking number. You'll get real-time updates on your shipment's location and status.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading3">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3">
+                                    What are your delivery times?
+                                </button>
+                            </h2>
+                            <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Delivery times vary based on the distance and service type selected. Local deliveries typically take 1-2 business days, while long-distance shipments may take 3-7 business days. Express options are available for faster delivery.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading4">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4">
+                                    How is pricing calculated?
+                                </button>
+                            </h2>
+                            <div id="collapse4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Pricing is calculated based on several factors including distance, package weight and dimensions, delivery speed, and any additional services requested. You'll see the total cost before confirming your order.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading5">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5">
+                                    What if my package is damaged or lost?
+                                </button>
+                            </h2>
+                            <div id="collapse5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    We take package safety seriously. All shipments are insured, and in the rare event of damage or loss, we'll work with you to resolve the issue promptly. Contact our support team immediately if you encounter any problems.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading6">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse6">
+                                    Can I schedule a pickup time?
+                                </button>
+                            </h2>
+                            <div id="collapse6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Yes, you can specify your preferred pickup time when placing an order. We'll do our best to accommodate your schedule, and our delivery partners will contact you to confirm the exact pickup time.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading7">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse7">
+                                    Do you deliver internationally?
+                                </button>
+                            </h2>
+                            <div id="collapse7" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Currently, we focus on domestic deliveries within our service areas. We're working on expanding our international shipping capabilities. Contact us for specific availability in your region.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading8">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse8">
+                                    How can I become a delivery partner?
+                                </button>
+                            </h2>
+                            <div id="collapse8" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    We're always looking for reliable delivery partners! You can apply through our partner registration process. We'll review your application and contact you with next steps. Requirements include a valid driver's license, vehicle, and clean background check.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Contact Section -->
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5 text-center">
+                    <h3 class="mb-4">Still Have Questions?</h3>
+                    <p class="text-muted mb-4">
+                        Can't find the answer you're looking for? Our support team is here to help.
+                    </p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="contact-item">
+                                <i class="fas fa-phone fa-2x text-primary mb-3"></i>
+                                <h5>Call Us</h5>
+                                <p class="text-muted">{{ contact_settings.phone or '+1 (555) 123-4567' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="contact-item">
+                                <i class="fas fa-envelope fa-2x text-primary mb-3"></i>
+                                <h5>Email Us</h5>
+                                <p class="text-muted">{{ contact_settings.email or 'support@company.com' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <a href="{{ url_for('contact_us') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-envelope"></i> Contact Support
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.accordion-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.accordion-button {
+    background: #f8fafc;
+    border: none;
+    font-weight: 600;
+    color: #111;
+}
+
+.accordion-button:not(.collapsed) {
+    background: var(--bs-primary);
+    color: white;
+}
+
+.accordion-button:focus {
+    box-shadow: none;
+    border-color: var(--bs-primary);
+}
+
+.contact-item {
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+
+.contact-item:hover {
+    transform: translateY(-5px);
+}
+
+.card {
+    border-radius: 16px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+}
+</style>
+{% endblock %} 

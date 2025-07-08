@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partner Configuration - Admin Panel</title>
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-bg: #f8fafc;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        .config-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .config-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+            border: 1px solid #e5e7eb;
+        }
+
+        .form-control {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 0.75rem;
+            transition: all 0.3s ease;
+            color: #111 !important;
+            background-color: #fff !important;
+        }
+
+        .form-label {
+            color: #111 !important;
+            font-weight: 600;
+        }
+
+        .card-header h5 {
+            color: #111 !important;
+        }
+
+        .partner-card h6 {
+            color: #111 !important;
+        }
+
+        .partner-card p {
+            color: #6b7280 !important;
+        }
+
+        .order-assignment h5 {
+            color: #111 !important;
+        }
+
+        .order-assignment p {
+            color: #6b7280 !important;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .partner-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .partner-card {
+            background: #f8fafc;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .order-assignment {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border: 2px solid var(--primary-color);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="config-container">
+        <div class="config-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-users"></i> Partner Configuration</h2>
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+
+            <!-- Create New Partner -->
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-plus-circle"></i> Create New Partner</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="createPartnerForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Username</label>
+                                    <input type="text" class="form-control" name="username" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" name="email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" name="full_name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Password</label>
+                                    <input type="password" class="form-control" name="password" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Create Partner
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-list"></i> Existing Partners</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="partner-grid">
+                                {% for partner in partners %}
+                                <div class="partner-card">
+                                    <h6><i class="fas fa-user"></i> {{ partner.full_name }}</h6>
+                                    <p class="text-muted mb-1">{{ partner.username }}</p>
+                                    <p class="text-muted mb-2">{{ partner.email }}</p>
+                                    <span class="badge bg-{{ 'success' if partner.is_active else 'danger' }}">
+                                        {{ 'Active' if partner.is_active else 'Inactive' }}
+                                    </span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Assignment -->
+            <div class="order-assignment">
+                <h5><i class="fas fa-truck"></i> Assign Orders to Partners</h5>
+                <p class="text-muted">Assign unassigned orders to delivery partners</p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-label">Select Order</label>
+                        <select class="form-control" id="orderSelect">
+                            <option value="">Choose an order...</option>
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Assign to Partner</label>
+                        <select class="form-control" id="partnerSelect">
+                            <option value="">Choose a partner...</option>
+                            {% for partner in partners %}
+                            <option value="{{ partner.id }}">{{ partner.full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-success mt-3" onclick="assignOrder()">
+                    <i class="fas fa-link"></i> Assign Order
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Create partner form
+        document.getElementById('createPartnerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch('/admin/create-partner', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Partner created successfully!');
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                alert('Error creating partner: ' + error);
+            });
+        });
+
+        // Load unassigned orders
+        function loadUnassignedOrders() {
+            fetch('/admin/unassigned-orders')
+            .then(response => response.json())
+            .then(data => {
+                const select = document.getElementById('orderSelect');
+                select.innerHTML = '<option value="">Choose an order...</option>';
+                
+                data.orders.forEach(order => {
+                    const option = document.createElement('option');
+                    option.value = order.id;
+                    option.textContent = `${order.reference_number} - ${order.customer_name}`;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        // Assign order to partner
+        function assignOrder() {
+            const orderId = document.getElementById('orderSelect').value;
+            const partnerId = document.getElementById('partnerSelect').value;
+            
+            if (!orderId || !partnerId) {
+                alert('Please select both order and partner');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('order_id', orderId);
+            formData.append('partner_id', partnerId);
+            
+            fetch('/admin/assign-order', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Order assigned successfully!');
+                    loadUnassignedOrders();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                alert('Error assigning order: ' + error);
+            });
+        }
+
+        // Load orders on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUnassignedOrders();
+        });
+    </script>
+</body>
+</html> 

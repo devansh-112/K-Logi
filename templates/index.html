@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - GotoFast Logistics{% endblock %}
+
+{% block content %}
+<div class="hero-section py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4 slide-in-left">
+                    <i class="fas fa-shipping-fast"></i> Fast & Reliable Logistics
+                </h1>
+                <p class="lead mb-4 slide-in-left" style="animation-delay: 0.3s;">
+                    Professional delivery services with real-time tracking, competitive pricing, and secure handling of your packages.
+                </p>
+                <div class="d-flex gap-3 flex-wrap slide-in-left" style="animation-delay: 0.6s;">
+                    <a href="{{ url_for('place_order') }}" class="btn btn-light btn-lg">
+                        <i class="fas fa-plus-circle"></i> Place Order
+                    </a>
+                    <a href="{{ url_for('track_package') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-search"></i> Track Package
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <img src="{{ url_for('static', filename='images/logistics1.svg') }}" class="img-fluid logistics-image slide-in-right" alt="Logistics">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+
+    <!-- Features Section -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-clock fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">Fast Delivery</h5>
+                    <p class="card-text">
+                        Express delivery options available with same-day and next-day delivery services.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-shield-alt fa-3x text-success"></i>
+                    </div>
+                    <h5 class="card-title">Secure Handling</h5>
+                    <p class="card-text">
+                        Your packages are handled with care and tracked throughout the entire delivery process.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-map-marker-alt fa-3x text-info"></i>
+                    </div>
+                    <h5 class="card-title">Real-time Tracking</h5>
+                    <p class="card-text">
+                        Track your package in real-time with detailed delivery timeline and status updates.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Services Section -->
+    <div class="services-section py-5" style="background: linear-gradient(45deg, #f8f9fa 0%, #e9ecef 100%);">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Our Services</h2>
+            <p class="lead">Choose from our range of delivery options</p>
+        </div>
+        
+        <div class="row g-4 mb-5">
+            <div class="col-lg-3 col-md-6">
+                <div class="service-card p-4 text-center h-100 gradient-card">
+                    <i class="fas fa-building fa-2x text-primary mb-3"></i>
+                    <h5>Local Delivery</h5>
+                    <p>Same-city delivery within 24 hours</p>
+                    <small class="text-muted">Starting from ₹50/kg</small>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="service-card p-4 text-center h-100 gradient-card">
+                    <i class="fas fa-map fa-2x text-success mb-3"></i>
+                    <h5>Regional</h5>
+                    <p>Same-state delivery within 3 days</p>
+                    <small class="text-muted">Starting from ₹80/kg</small>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="service-card p-4 text-center h-100 gradient-card">
+                    <i class="fas fa-globe fa-2x text-info mb-3"></i>
+                    <h5>National</h5>
+                    <p>Cross-state delivery within 5 days</p>
+                    <small class="text-muted">Starting from ₹120/kg</small>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="service-card p-4 text-center h-100 gradient-card">
+                    <i class="fas fa-rocket fa-2x text-warning mb-3"></i>
+                    <h5>Express</h5>
+                    <p>Priority delivery same day</p>
+                    <small class="text-muted">Starting from ₹100/kg</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Logistics Images Section -->
+        <div class="logistics-images-section py-5">
+            <div class="row g-4 align-items-center">
+                <div class="col-md-4">
+                    <div class="image-container">
+                        <img src="{{ url_for('static', filename='images/logistics1.svg') }}" class="img-fluid logistics-slider-image" alt="Road Transport">
+                        <div class="image-overlay">
+                            <h5 class="text-white">Road Transport</h5>
+                            <p class="text-white">Fast and reliable ground shipping</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="image-container">
+                        <img src="{{ url_for('static', filename='images/logistics2.svg') }}" class="img-fluid logistics-slider-image" alt="Warehouse Operations">
+                        <div class="image-overlay">
+                            <h5 class="text-white">Warehouse Operations</h5>
+                            <p class="text-white">Secure storage and handling</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="image-container">
+                        <img src="{{ url_for('static', filename='images/logistics3.svg') }}" class="img-fluid logistics-slider-image" alt="Air Cargo">
+                        <div class="image-overlay">
+                            <h5 class="text-white">Air Cargo</h5>
+                            <p class="text-white">Express international delivery</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works Section -->
+    <div class="how-it-works py-5">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">How It Works</h2>
+            <p class="lead">Simple steps to get your package delivered</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="step-card text-center">
+                    <div class="step-number">1</div>
+                    <h5>Place Order</h5>
+                    <p>Fill out the delivery form with package details</p>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="step-card text-center">
+                    <div class="step-number">2</div>
+                    <h5>Get Quote</h5>
+                    <p>Receive instant pricing and delivery estimate</p>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="step-card text-center">
+                    <div class="step-number">3</div>
+                    <h5>Track Package</h5>
+                    <p>Monitor your package with real-time updates</p>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="step-card text-center">
+                    <div class="step-number">4</div>
+                    <h5>Receive</h5>
+                    <p>Get your package delivered on time</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
